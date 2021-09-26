@@ -1,55 +1,59 @@
 import pygame
 from test import *
 from classes import Tile, Pawn, Rook, Knight, Bishop, Queen, King
-from tiles import tiles_2d
-from config import tiles_in_a_row
+from tiles import grid
+from config import board_size
 
 
-def draw_all_tiles(tiles_2d_: list):
+def draw_all_tiles(grid_: list):
     # Creates instances of tiles and draws them
-    for tile_columns in tiles_2d_:
+    for tile_columns in grid_:
         for tile in tile_columns:
             tile.draw()
 
 
-def init_pieces(tiles_2d_):
+def init_pieces(grid_):
     # WHITE
     
     # Pawns
-    for row in range(tiles_in_a_row):
-        tiles_2d_[row][1].piece = Pawn('white')
-        tiles_2d_[row][1].draw_piece()
+    for row in range(board_size):
+        grid_[row][1].piece = Pawn('white')
+        grid_[row][1].draw_piece()
     
     # Rooks
     for row in [0, 7]:
-        tiles_2d_[row][0].piece = Rook('white')
-        tiles_2d_[row][0].draw_piece()
+        grid_[row][0].piece = Rook('white')
+        grid_[row][0].draw_piece()
         
     # Knigts
     for row in [1, 6]:
-        tiles_2d_[row][0].piece = Knight('white')
-        tiles_2d_[row][0].draw_piece()
+        grid_[row][0].piece = Knight('white')
+        grid_[row][0].draw_piece()
         
     # Bishops
     for row in [2, 5]:
-        tiles_2d_[row][0].piece = Bishop('white')
-        tiles_2d_[row][0].draw_piece()
+        grid_[row][0].piece = Bishop('white')
+        grid_[row][0].draw_piece()
         
     # Queen
-    tiles_2d_[3][0].piece = Queen('white')
-    tiles_2d_[3][0].draw_piece()
+    grid_[3][0].piece = Queen('white')
+    grid_[3][0].draw_piece()
         
     # King
-    tiles_2d_[4][0].piece = King('white')
-    tiles_2d_[4][0].draw_piece()
+    grid_[4][0].piece = King('white')
+    grid_[4][0].draw_piece()
+    
+    
+def click()
+
         
 
 
 if __name__ == "__main__":
     pygame.init()
 
-    tiles = draw_all_tiles(tiles_2d)
-    init_pieces(tiles_2d)
+    tiles = draw_all_tiles(grid)
+    init_pieces(grid)
 
     pygame.display.flip()
 
@@ -58,4 +62,20 @@ if __name__ == "__main__":
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-    pygame.quit()
+                pygame.quit()
+                
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    y, x = Find_Node(pos, WIDTH)
+                    if selected == False:
+                        try:
+                            possible = select_moves((board[x][y]), (x, y), moves)
+                            for positions in possible:
+                                row, col = positions
+                                grid[row][col].colour = BLUE
+                            piece_to_move = x, y
+                            selected = True
+                        except:
+                            piece_to_move = []
+                            print('Can\'t select')
+    

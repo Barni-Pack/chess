@@ -1,19 +1,53 @@
 from typing import Optional
 import pygame
 
-from config import tile_size, surface
+from config import tile_size, surface, board_size
 from os import path
 import svg
+from grid_map import grid_map
 
 
-class Pawn:
-    def __init__(self, team):
-        self.team = team
-        self.killable = True
-        if team == 'white':
-            self.image = 'w_pawn.svg'
+def index_2d(list_2d, key):
+    for y, column in enumerate(list_2d):
+        if key in column:
+            x = column.index(key)
+            return x, board_size-y-1
+
+
+class Piece:
+    def __init__(self, name, killable=False):
+        self.team = name[0]
+        self.killable = killable
+        self.coordinate = index_2d(grid_map, name)
+        self.x, self.y = self.coordinate
+        self.type = name.split('_')[1]
+        
+        if self.team == 'w':
+            self.image = f'w_{self.type}.svg'
         else:
-            self.image = 'b_pawn.svg'
+            self.image = f'b_{self.type}.svg'
+            
+    def draw(self):
+        pawn_image = svg.load_svg(path.join('svg', self.piece.image))
+
+        scale=0.75
+        pawn_image=pygame.transform.smoothscale(pawn_image, (int(tile_size * scale),
+                                                         int(tile_size * scale)))
+
+        image_width, image_height=pawn_image.get_width(), pawn_image.get_height()
+        
+        x_pixels=(self.x - 1) * tile_size,
+        y_pixels=(board_size - self.y) * tile_size
+
+        surface.blit(pawn_image, (x_pixels + (tile_size - image_width) / 2,
+                                  y_pixels + (tile_size - image_height) / 2))
+        
+
+
+class Pawn(Piece):
+    def show_moves(self):
+        return
+        
             
 class Rook:
     def __init__(self, team):
