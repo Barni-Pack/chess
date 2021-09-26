@@ -19,13 +19,6 @@ class Tile:
                          pygame.Rect(self.x, self.y, self.size, self.size))
 
 
-# def create_and_draw_all_tiles(tiles_map_):
-#     # Creates instances of tiles and draws them
-#     for name in tiles_map_.keys():
-#         exec(f'{name} = Tile("{name}")')
-#         exec(f'{name}.draw()')
-
-
 class Pawn:
     def __init__(self, team, tile: Tile):
         self.team = team
