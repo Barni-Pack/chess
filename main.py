@@ -30,6 +30,7 @@ def select_piece(pos_x, pos_y):
     # print(tile_name, piece_name)
     # print(tile_name.coordinates)
 
+    # Selects piece if it exists
     if piece_name:
         try:
             piece = pieces_map[piece_name]
@@ -42,8 +43,7 @@ def select_piece(pos_x, pos_y):
     # Select
     if not selected:
         if piece:
-            tile_name.select()
-            print(tile_name)
+            piece.select()
             # print(piece.x, piece.y)
             return piece
 
