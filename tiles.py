@@ -12,6 +12,9 @@ class MyList(list):
 
     def __getitem__(self, n):
         return super(MyList, self).__getitem__(n-1)
+    
+    def __setitem__(self, key, value):
+        return super(MyList, self).__setitem__(key-1, value)
 
 
 tile_map = [
@@ -77,6 +80,12 @@ class Tile:
         self.set_color()
         self.draw()
         pygame.display.flip()
+        
+    def init(self):
+        self.selected = False
+        self.set_color()
+        self.draw()
+        pygame.display.flip()
 
     def __str__(self) -> str:
         return self.name
@@ -85,10 +94,11 @@ class Tile:
         return self.name + '|' + str(self.x) + ':' + str(self.y)
 
 
+# Filles tile_map with Tile instances
 for x, row in enumerate(tile_map):
     for y, column in enumerate(row):
         tile_map[x][y] = Tile(tile_map[x][y])
 
 
 tile_map = MyList([MyList(row) for row in tile_map])
-print(tile_map)
+# print(tile_map)

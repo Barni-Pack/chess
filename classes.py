@@ -25,8 +25,7 @@ class Piece:
         self.type = name.split('_')[1]
         self.killable = killable
 
-        self.coordinates = index_2d(grid_map, name)
-        self.set_coordinates(*self.coordinates)
+        self.set_coordinates()
 
         if self.team == 'w':
             self.image = f'w_{self.type}.svg'
@@ -35,10 +34,9 @@ class Piece:
 
         self.draw()
 
-    def set_coordinates(self, x, y):
-        self.x = x
-        self.y = y
-        self.coordinates = self.x, self.y
+    def set_coordinates(self):
+        self.coordinates = index_2d(grid_map, self.name)
+        self.x, self.y = self.coordinates
         self.tile = tile_map[self.x][self.y]
 
     def draw(self):
@@ -61,27 +59,26 @@ class Piece:
         self.tile.select()
         self.draw()
 
-    def move2field(self, field_index: tuple):
+    def move2field(self, tile: Tile):
         self_x, self_y = index_2d(grid_map, self.name)
-        field_x, field_y = field_index
+        field_x, field_y = tile.coordinates
 
-        # print(self_x, self_y)
+        self_map = grid_map[self_x][self_y]
 
-        self_map = grid_map[self_y][self_x]
-        new_map = grid_map[field_y][field_x]
+        new_map = grid_map[field_x][field_y]
 
-        # print(self_map, new_map)
+        
+        grid_map[field_x][field_y] = self_map
+        grid_map[self_x][self_y] = new_map
 
-        new_map, self_map = self_map, None
-
-        # new_x, new_y = index_2d(grid_map, new_map)
-        # pieces_map[new_map].select()
-
-        # print(self_map, new_map)
-
-        # self.set_coordinates(*index_2d(grid_map, new_map))
-        # print(self.coordinates)
-        # self.draw()
+        # Draw new piece
+        self.set_coordinates()
+        self.draw()
+        
+        # Redraw old tile
+        tile_map[self_x][self_y].init()
+        
+        
 
 
 class Pawn(Piece):
