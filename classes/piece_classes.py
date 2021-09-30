@@ -58,6 +58,7 @@ class Piece:
     def select(self):
         self.tile.select()
         self.draw()
+        self.show_moves()
 
     def move2field(self, tile: Tile):
         self_x, self_y = index_2d(grid_map, self.name)
@@ -81,6 +82,22 @@ class Piece:
 
 class Pawn(Piece):
     def show_moves(self):
+        """Double step availabe if on the starting position"""
+
+        # White team
+        if self.y == 2:
+            tile_map[self.x][self.y + 1].select()
+            tile_map[self.x][self.y + 2].select()
+        # Black team
+        if self.y == 7:
+            tile_map[self.x][self.y - 1].select()
+            tile_map[self.x][self.y - 2].select()
+            
+        """Single step if on any other"""
+        
+        return
+    
+    def show_edible(self):
         return
 
 
