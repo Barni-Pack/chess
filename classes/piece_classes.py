@@ -3,9 +3,12 @@ import pygame
 from config import tile_size, surface, board_size
 from os import path
 import svg
-from grid_map import grid_map
 
-from tiles import tile_map, Tile
+from mappings.grid_map import grid_map
+from mappings.tile_map import tile_map
+
+from .tile_class import Tile
+
 
 
 def index_2d(list_2d, key):
@@ -13,9 +16,6 @@ def index_2d(list_2d, key):
         if key in column:
             y = column.index(key)
             return x+1, y+1
-
-
-# print(index_2d(grid_map, 'w_pawn_1'))
 
 
 class Piece:
@@ -63,22 +63,20 @@ class Piece:
         self_x, self_y = index_2d(grid_map, self.name)
         field_x, field_y = tile.coordinates
 
+        # Swap two values in grid map
         self_map = grid_map[self_x][self_y]
 
         new_map = grid_map[field_x][field_y]
 
-        
         grid_map[field_x][field_y] = self_map
         grid_map[self_x][self_y] = new_map
 
         # Draw new piece
         self.set_coordinates()
         self.draw()
-        
+
         # Redraw old tile
-        tile_map[self_x][self_y].init()
-        
-        
+        tile_map[self_x][self_y].select()
 
 
 class Pawn(Piece):

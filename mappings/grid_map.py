@@ -1,12 +1,4 @@
-class MyList(list):
-    def __init__(self, *args, **kwargs):
-        super(MyList, self).__init__(args[0])
-
-    def __getitem__(self, n):
-        return super(MyList, self).__getitem__(n-1)
-    
-    def __setitem__(self, key, value):
-        return super(MyList, self).__setitem__(key-1, value)
+from my_list import MyList
 
 
 grid_map = [
@@ -42,9 +34,3 @@ def transpose(l1):
 grid_map.reverse()
 grid_map = transpose(grid_map)
 grid_map = MyList([MyList(row) for row in grid_map])
-
-# print(grid_map[1][2])
-# print(grid_map)
-
-# grid_map[1][2] = 1
-# print(grid_map)

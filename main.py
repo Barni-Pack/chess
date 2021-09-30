@@ -1,18 +1,11 @@
 import pygame
 from test import *
-from classes import Pawn, Rook, Knight, Bishop, Queen, King
-from tiles import tile_map
-from grid_map import grid_map
-from pieces_map import pieces_map
+from classes.piece_classes import Pawn, Rook, Knight, Bishop, Queen, King
+from mappings.tile_map import tile_map
+from mappings.grid_map import grid_map
+from mappings.pieces_map import pieces_map
 from config import board_size, tile_size, screen_size
 from game_data import selected, new_selected
-
-
-def draw_all_tiles(grid_: list):
-    # Creates instances of tiles and draws them
-    for tile_columns in grid_:
-        for tile in tile_columns:
-            tile.draw()
 
 
 def select_piece(pos_x, pos_y):

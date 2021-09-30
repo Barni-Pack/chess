@@ -1,5 +1,6 @@
-from classes import Rook, Knight, Bishop, Queen, King, Pawn
+from classes.piece_classes import Rook, Knight, Bishop, Queen, King, Pawn
 
+# Creates mapping of piece name and Piece instance
 pieces_map = {
     'b_rook_1': Rook('b_rook_1'),
     'b_knight_1': Knight('b_knight_1'),
@@ -9,7 +10,7 @@ pieces_map = {
     'b_bishop_2': Bishop('b_bishop_2'),
     'b_knight_2': Knight('b_knight_2'),
     'b_rook_2': Rook('b_rook_2'),
-    
+
     'b_pawn_1': Pawn('b_pawn_1'),
     'b_pawn_2': Pawn('b_pawn_2'),
     'b_pawn_3': Pawn('b_pawn_3'),
@@ -18,7 +19,7 @@ pieces_map = {
     'b_pawn_6': Pawn('b_pawn_6'),
     'b_pawn_7': Pawn('b_pawn_7'),
     'b_pawn_8': Pawn('b_pawn_8'),
-    
+
     'w_pawn_1': Pawn('w_pawn_1'),
     'w_pawn_2': Pawn('w_pawn_2'),
     'w_pawn_3': Pawn('w_pawn_3'),
@@ -27,7 +28,7 @@ pieces_map = {
     'w_pawn_6': Pawn('w_pawn_6'),
     'w_pawn_7': Pawn('w_pawn_7'),
     'w_pawn_8': Pawn('w_pawn_8'),
-    
+
     'w_rook_1': Rook('w_rook_1'),
     'w_knight_1': Knight('w_knight_1'),
     'w_bishop_1': Bishop('w_bishop_1'),
@@ -37,10 +38,3 @@ pieces_map = {
     'w_knight_2': Knight('w_knight_2'),
     'w_rook_2': Rook('w_rook_2'),
 }
-
-
-# x, y = index_2d(grid_map, 'b_rook_1')
-# grid_map_key = grid_map[x][y]
-# print(grid_map[x][y])
-
-# print(pieces['b_pawn_1'].x)
