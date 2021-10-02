@@ -41,7 +41,7 @@ class Tile:
         if self.die:
             self.color = red_tile_color
             return
-        
+
         if self.team == 'white':
             if self.selected:
                 self.color = selected_white_tile_color
@@ -52,24 +52,21 @@ class Tile:
                 self.color = selected_black_tile_color
             else:
                 self.color = black_tile_color
-                
-        
 
     # Draws tile
+
     def draw(self):
         pygame.draw.rect(surface,
                          self.color,
                          pygame.Rect(self.x_pixels, self.y_pixels, self.size, self.size))
         pygame.display.flip()
 
-        
-
     # Selects or deselects tile
+
     def select(self):
         self.selected = not self.selected
         self.set_color()
         self.draw()
-        
 
     # def deselect(self):
     #     self.selected = False
@@ -80,7 +77,6 @@ class Tile:
     def select2die(self):
         self.die = not self.die
         self.select()
-        
 
     def __str__(self) -> str:
         return self.name
