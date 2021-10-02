@@ -5,7 +5,7 @@ from mappings.tile_map import tile_map
 from mappings.board import board
 from mappings.pieces_map import pieces_map
 from config import board_size, tile_size, screen_size
-from game_data import selected, new_selected
+from game_data import selected, new_selected, dead_pieces
 
 
 def select_piece(pos_x, pos_y):
@@ -26,7 +26,7 @@ def select_piece(pos_x, pos_y):
         try:
             piece = pieces_map[piece_name]
         except:
-            print('Piece was not found (dead probably)')
+            print('Piece was not found (huh???)')
             return None
 
         # print(piece.name)
@@ -35,7 +35,6 @@ def select_piece(pos_x, pos_y):
         if not selected:
             if piece:
                 piece.select()
-                piece.show_edible(pieces_map)
                 # print(piece.x, piece.y)
                 return piece
 
@@ -47,22 +46,21 @@ def select_piece(pos_x, pos_y):
             if piece:
                 # Deselect if self
                 if piece == selected:
-                    selected.select()
-                    selected.show_edible(pieces_map)
+                    selected.deselect()
                     selected = None
                     return None
 
                 # Select other if from the same team
                 if piece.team == selected.team:
-                    selected.select()
+                    selected.deselect()
                     piece.select()
                     selected = piece
                     return None
                 
                 # Eat other if from the other team
                 else:
-                    selected.move2field(tile)
-                    selected.select2die()
+                    selected.kill(piece)
+                    update_all_pieces_data()
                     selected = None 
                     return None
 
@@ -75,9 +73,15 @@ def select_piece(pos_x, pos_y):
         # Move to second selected tile
         elif tile:
             # print(tile.name)
-            selected.move2field(tile)
+            selected.move2tile(tile)
+            update_all_pieces_data()
             selected = None
             return None
+        
+
+def update_all_pieces_data():
+    for piece_name in sum(board, []):
+        pieces_map[piece_name].update_data() if piece_name else None
 
 
 if __name__ == "__main__":

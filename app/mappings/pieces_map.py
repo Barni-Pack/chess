@@ -38,3 +38,7 @@ pieces_map = {
     'w_knight_2': Knight('w_knight_2'),
     'w_rook_2': Rook('w_rook_2'),
 }
+
+for _, piece in pieces_map.items():
+    piece.set_pieces_map(pieces_map)
+    piece.get_moves()
