@@ -2,7 +2,7 @@ import pygame
 
 from config import tile_size, surface, board_size
 from game_data import dead_pieces
-from os import path
+from os import path, stat
 import svg
 
 from mappings.board import board
@@ -50,11 +50,15 @@ class Piece:
         self.pieces_map = pieces_map
 
     def get_piece(self, x, y):
-        return self.pieces_map[board[x][y]]
+        try:
+            return self.pieces_map[board[x][y]]
+        except KeyError:
+            # Piece was not found in pieces_map (probably disabled)
+            pass
 
     def select(self):
-        print(self.moves)
-        print(self.enemies)
+        # print(self.moves)
+        # print(self.enemies)
         self.selected = True
         self.check_selection()
 
@@ -115,7 +119,6 @@ class Piece:
 
         surface.blit(pawn_image, (x_pixels + (tile_size - image_width) / 2,
                                   y_pixels + (tile_size - image_height) / 2))
-        # pygame.display.flip()
 
     def move2tile(self, tile: Tile):
         # Deselect self
@@ -123,6 +126,7 @@ class Piece:
 
         # Return if move was not possible
         if tile not in self.moves:
+            # print('This move is not possible')
             return
 
         self.swap_with_tile(tile)
@@ -132,7 +136,7 @@ class Piece:
         self.deselect()
 
         if piece not in self.enemies:
-            print('huh?')
+            # print('Selected enemy piece is not killable')
             return
 
         global dead_pieces
@@ -166,11 +170,25 @@ class Piece:
 
     def update_all_pieces_data(self):
         for piece_name in sum(board, []):
-            self.pieces_map[piece_name].get_moves() if piece_name else None
+            try:
+                self.pieces_map[piece_name].get_moves() if piece_name else None
+            except KeyError:
+                # Piece was not found in pieces_map (probably disabled)
+                pass
 
     # def update_data(self):
     #     self.get_moves()
     #     self.get_enemies()
+
+    @staticmethod
+    def check_limits(x, y):
+        # Check that position is in board limits
+        limits = range(1, 8 + 1)
+
+        if x not in limits or y not in limits:
+            return False
+        else:
+            return True
 
     def get_moves(self):
         return
@@ -205,7 +223,7 @@ class Pawn(Piece):
                 # Double step
                 if self.y == 7 and not board[self.x][self.y - 2]:
                     self.moves.append(tile_map[self.x][self.y - 2])
-        
+
         self.get_enemies()
 
     def get_enemies(self):
@@ -261,10 +279,11 @@ class Pawn(Piece):
 
 
 class Rook(Piece):
-    def get_moves(self):
-        # Init moves and enemies list
-        self.moves = []
-        self.enemies = []
+    def get_moves(self, init=True):
+        if init:
+            # Init moves and enemies list
+            self.moves = []
+            self.enemies = []
 
         # x, y = self.x, self.y
 
@@ -277,6 +296,8 @@ class Rook(Piece):
             else:
                 # Add enemy to enemies and break
                 piece = self.get_piece(self.x, y)
+                if not piece:
+                    break
 
                 if piece.team != self.team:
                     self.enemies.append(piece)
@@ -295,6 +316,8 @@ class Rook(Piece):
             else:
                 # Add enemy to enemies and break
                 piece = self.get_piece(self.x, y)
+                if not piece:
+                    break
 
                 if piece.team != self.team:
                     self.enemies.append(piece)
@@ -313,6 +336,8 @@ class Rook(Piece):
             else:
                 # Add enemy to enemies and break
                 piece = self.get_piece(x, self.y)
+                if not piece:
+                    break
 
                 if piece.team != self.team:
                     self.enemies.append(piece)
@@ -331,6 +356,8 @@ class Rook(Piece):
             else:
                 # Add enemy to enemies and break
                 piece = self.get_piece(x, self.y)
+                if not piece:
+                    break
 
                 if piece.team != self.team:
                     self.enemies.append(piece)
@@ -347,79 +374,117 @@ class Knight(Piece):
 
 
 class Bishop(Piece):
-    def show_moves(self):
-        return
+    def get_moves(self, init=True):
+
+        if init:
+            # Init moves and enemies list
+            self.moves = []
+            self.enemies = []
+
+        # Diagonals
+
+        # Top right
+        self.bishop_snippet(1, 1)
+
+        # Bottom right
+        self.bishop_snippet(1, -1)
+
+        # Bottom left
+        self.bishop_snippet(-1, -1)
+
+        # Top left
+        self.bishop_snippet(-1, 1)
+
+    def bishop_snippet(self, x_increment, y_increment):
+        x = self.x
+        y = self.y
+
+        while True:
+
+            x += x_increment
+            y += y_increment
+            print(x, y)
+
+            # Check that position is in board limits
+            if not self.check_limits(x, y):
+                break
+
+            # Add empty to movess
+            if not board[x][y]:
+                self.moves.append(tile_map[x][y])
+                print(tile_map[x][y])
+
+            else:
+                # Add enemy to enemies and break
+                piece = self.get_piece(x, y)
+                if not piece:
+                    break
+
+                if piece.team != self.team:
+                    self.enemies.append(piece)
+                    break
+
+                # Break
+                else:
+                    break
+
+            # except IndexError:
+            #     break
 
 
-class Queen(Piece):
-    def show_moves(self):
-        return
+class Queen(Bishop, Rook):
+    def get_moves(self):
+        self.call_bishop()
+        self.call_rook()
+
+    def call_bishop(self):
+        Bishop.get_moves(self)
+
+    def call_rook(self):
+        Rook.get_moves(self, init=False)
 
 
 class King(Piece):
     def get_moves(self):
         # Init moves list
         self.moves = []
+        self.enemies = []
+        
+        # Check in 1 tile radius
+        for x in range(-1, 2):
+            for y in range(-1, 2):
+                # Skip if self position
+                if x == 0 and y == 0:
+                    continue
+                
+                self.king_snippet(x, y)
 
-        print('nigag')
 
-        x, y = self.x, self.y
+    def king_snippet(self, x_increment, y_increment):
+        x = self.x + x_increment
+        y = self.y + y_increment
 
-        # bottom left
-        try:
-            if not board[x - 1][y - 1]:
-                self.moves.append(tile_map[x - 1][y - 1])
+        # Check that position is in board limits
+        if not self.check_limits(x, y):
+            return
+
+        try:         
+            # Add empty to movess
+            if not board[x][y]:
+                self.moves.append(tile_map[x][y])
+
+            else:
+                # Add enemy to enemies and break
+                piece = self.get_piece(x, y)
+                if not piece:
+                    return
+
+                if piece.team != self.team:
+                    self.enemies.append(piece)
+                    return
+
+                else:
+                    return    
+                
         except IndexError:
-            return None
-
-        # middle left
-        try:
-            if not board[x - 1][y]:
-                self.moves.append(tile_map[x - 1][y])
-        except IndexError:
-            return None
-
-        # top left
-        try:
-            if not board[x - 1][y + 1]:
-                self.moves.append(tile_map[x - 1][y + 1])
-        except IndexError:
-            return None
-
-        # top middle
-        try:
-            if not board[x][y + 1]:
-                self.moves.append(tile_map[x][y + 1])
-        except IndexError:
-            return None
-
-        # top right
-        try:
-            if not board[x + 1][y + 1]:
-                self.moves.append(tile_map[x + 1][y + 1])
-        except IndexError:
-            return None
-
-        # middle right
-        try:
-            if not board[x + 1][y]:
-                self.moves.append(tile_map[x + 1][y])
-        except IndexError:
-            return None
-
-        # bottom right
-        try:
-            if not board[x + 1][y - 1]:
-                self.moves.append(tile_map[x + 1][y - 1])
-        except IndexError:
-            return None
-
-        # bottom middle
-        try:
-            if not board[x][y - 1]:
-                self.moves.append(tile_map[x][y - 1])
-        except IndexError:
-            return None
-
-    def show_edible(self):
-        return
+            return

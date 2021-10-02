@@ -1,5 +1,16 @@
-# lst = [100]
+class Bishop():
+  def get_moves(self):
+    print('bishop')
+    
+class Rook():
+  def get_moves(self):
+    print('rook')
+    
+class Queen():
+  def get_moves(self):
+    Bishop.get_moves(self)
+    Rook.get_moves(self)
 
-# a = lst[0]
-# lst[0] = 1
-# print(a, lst[0])
+q = Queen()
+
+# q.get_moves()
