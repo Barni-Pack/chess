@@ -8,6 +8,7 @@ tile_size = int(screen_size / board_size)
 
 black_tile_color = (181, 136, 103)
 white_tile_color = (241, 217, 183)
+red_tile_color = (247, 145, 146)
 
 selected_black_tile_color = (168, 161, 76)
 selected_white_tile_color = (207, 207, 121)

@@ -1,4 +1,4 @@
-from config import board_size, tile_size, white_tile_color, black_tile_color, selected_white_tile_color, selected_black_tile_color
+from config import board_size, tile_size, white_tile_color, black_tile_color, selected_white_tile_color, selected_black_tile_color, red_tile_color
 import pygame
 from config import surface
 
@@ -32,11 +32,16 @@ class Tile:
         # Choose team based on coordinates
         self.team = 'white' if (self.x + self.y) % 2 == 0 else 'black'
         self.selected = False
+        self.die = False
         self.set_color()
         self.draw()
 
     # Set tile color based on tiile team and selected state
     def set_color(self):
+        if self.die:
+            self.color = red_tile_color
+            return
+        
         if self.team == 'white':
             if self.selected:
                 self.color = selected_white_tile_color
@@ -47,19 +52,35 @@ class Tile:
                 self.color = selected_black_tile_color
             else:
                 self.color = black_tile_color
+                
+        
 
     # Draws tile
     def draw(self):
         pygame.draw.rect(surface,
                          self.color,
                          pygame.Rect(self.x_pixels, self.y_pixels, self.size, self.size))
+        pygame.display.flip()
+
+        
 
     # Selects or deselects tile
     def select(self):
         self.selected = not self.selected
         self.set_color()
         self.draw()
-        pygame.display.flip()
+        
+
+    # def deselect(self):
+    #     self.selected = False
+    #     self.set_color()
+    #     self.draw()
+    #     pygame.display.flip()
+
+    def select2die(self):
+        self.die = not self.die
+        self.select()
+        
 
     def __str__(self) -> str:
         return self.name

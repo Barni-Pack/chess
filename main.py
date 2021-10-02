@@ -2,7 +2,7 @@ import pygame
 from test import *
 from classes.piece_classes import Pawn, Rook, Knight, Bishop, Queen, King
 from mappings.tile_map import tile_map
-from mappings.grid_map import grid_map
+from mappings.board import board
 from mappings.pieces_map import pieces_map
 from config import board_size, tile_size, screen_size
 from game_data import selected, new_selected
@@ -19,7 +19,7 @@ def select_piece(pos_x, pos_y):
     # print(x, y)
     tile = tile_map[x][y]
 
-    piece_name = grid_map[x][y]
+    piece_name = board[x][y]
 
     # Tile with piece was selected
     if piece_name:
@@ -35,6 +35,7 @@ def select_piece(pos_x, pos_y):
         if not selected:
             if piece:
                 piece.select()
+                piece.show_edible(pieces_map)
                 # print(piece.x, piece.y)
                 return piece
 
@@ -47,6 +48,7 @@ def select_piece(pos_x, pos_y):
                 # Deselect if self
                 if piece == selected:
                     selected.select()
+                    selected.show_edible(pieces_map)
                     selected = None
                     return None
 
@@ -55,6 +57,13 @@ def select_piece(pos_x, pos_y):
                     selected.select()
                     piece.select()
                     selected = piece
+                    return None
+                
+                # Eat other if from the other team
+                else:
+                    selected.move2field(tile)
+                    selected.select2die()
+                    selected = None 
                     return None
 
     # Emtpy tile was selected

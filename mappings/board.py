@@ -1,7 +1,7 @@
 from my_list import MyList
 
 
-grid_map = [
+board = [
     ['b_rook_1', 'b_knight_1', 'b_bishop_1', 'b_queen',
      'b_king', 'b_bishop_2', 'b_knight_2', 'b_rook_2'],
     ['b_pawn_1', 'b_pawn_2', 'b_pawn_3', 'b_pawn_4',
@@ -31,6 +31,6 @@ def transpose(l1):
     return l2
 
 
-grid_map.reverse()
-grid_map = transpose(grid_map)
-grid_map = MyList([MyList(row) for row in grid_map])
+board.reverse()
+board = transpose(board)
+board = MyList([MyList(row) for row in board])

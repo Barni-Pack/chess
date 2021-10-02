@@ -4,11 +4,10 @@ from config import tile_size, surface, board_size
 from os import path
 import svg
 
-from mappings.grid_map import grid_map
+from mappings.board import board
 from mappings.tile_map import tile_map
 
 from .tile_class import Tile
-
 
 
 def index_2d(list_2d, key):
@@ -35,7 +34,7 @@ class Piece:
         self.draw()
 
     def set_coordinates(self):
-        self.coordinates = index_2d(grid_map, self.name)
+        self.coordinates = index_2d(board, self.name)
         self.x, self.y = self.coordinates
         self.tile = tile_map[self.x][self.y]
 
@@ -60,49 +59,113 @@ class Piece:
         self.draw()
         self.show_moves()
 
+    def select2die(self):
+        self.tile.select2die()
+        self.draw()
+
     def move2field(self, tile: Tile):
-        self_x, self_y = index_2d(grid_map, self.name)
+        # Deselects tiles if move was not possible
+        if not tile.selected:
+            self.select()
+            print('nigga')
+            return
+
+        # Clear current selection
+        self.select()
+
+        self_x, self_y = index_2d(board, self.name)
         field_x, field_y = tile.coordinates
 
         # Swap two values in grid map
-        self_map = grid_map[self_x][self_y]
+        self_map = board[self_x][self_y]
 
-        new_map = grid_map[field_x][field_y]
+        new_map = board[field_x][field_y]
 
-        grid_map[field_x][field_y] = self_map
-        grid_map[self_x][self_y] = new_map
+        board[field_x][field_y] = self_map
+        board[self_x][self_y] = new_map
 
         # Draw new piece
         self.set_coordinates()
         self.draw()
 
         # Redraw old tile
-        tile_map[self_x][self_y].select()
+        tile_map[self_x][self_y].draw()
 
 
 class Pawn(Piece):
     def show_moves(self):
-        """Double step availabe if on the starting position"""
 
         # White team
-        if self.y == 2:
-            tile_map[self.x][self.y + 1].select()
-            tile_map[self.x][self.y + 2].select()
+        if self.team == 'w':
+
+            # Single step
+            if self.y in [2, 3, 4, 5, 6, 7] and not board[self.x][self.y + 1]:
+                tile_map[self.x][self.y + 1].select()
+
+                # Double step
+                if self.y == 2 and not board[self.x][self.y + 2]:
+                    tile_map[self.x][self.y + 2].select()
+
         # Black team
-        if self.y == 7:
-            tile_map[self.x][self.y - 1].select()
-            tile_map[self.x][self.y - 2].select()
-            
-        """Single step if on any other"""
-        
-        return
-    
-    def show_edible(self):
-        return
+        if self.team == 'b':
+
+            # Single step
+            if self.y in [7, 6, 5, 4, 3, 2] and not board[self.x][self.y - 1]:
+                tile_map[self.x][self.y - 1].select()
+
+                # Double step
+                if self.y == 7 and not board[self.x][self.y - 2]:
+                    tile_map[self.x][self.y - 2].select()
+
+    def show_edible(self, pieces_map):
+        left_enemy_x = None
+        right_enemy_x = None
+
+        # White team
+        if self.team == 'w':
+            if self.x > 1:
+                left_enemy_x = self.x - 1
+            if self.x < 8:
+                right_enemy_x = self.x + 1
+
+            if self.y < 8:
+                if board[left_enemy_x][self.y + 1] in pieces_map:
+                    left_enemy = pieces_map[board[left_enemy_x][self.y + 1]]
+
+                    if left_enemy.team != self.team:
+                        left_enemy.select2die()
+
+                if board[right_enemy_x][self.y + 1] in pieces_map:
+                    right_enemy = pieces_map[board[right_enemy_x][self.y + 1]]
+
+                    if right_enemy.team != self.team:
+                        right_enemy.select2die()
+
+        # Black team
+        if self.team == 'b':
+            if self.x > 1:
+                left_enemy_x = self.x - 1
+            if self.x < 8:
+                right_enemy_x = self.x + 1
+
+            if self.y > 1:
+                if board[left_enemy_x][self.y - 1] in pieces_map:
+                    left_enemy = pieces_map[board[left_enemy_x][self.y - 1]]
+
+                    if left_enemy.team != self.team:
+                        left_enemy.select2die()
+
+                if board[right_enemy_x][self.y - 1] in pieces_map:
+                    right_enemy = pieces_map[board[right_enemy_x][self.y - 1]]
+
+                    if right_enemy.team != self.team:
+                        right_enemy.select2die()
 
 
 class Rook(Piece):
     def show_moves(self):
+        moves = []
+
         return
 
 
@@ -123,4 +186,63 @@ class Queen(Piece):
 
 class King(Piece):
     def show_moves(self):
+        x, y = self.x, self.y
+        
+        # bottom left
+        try:
+            if not board[x - 1][y - 1]:
+                tile_map[x - 1][y - 1].select()
+        except IndexError:
+            return None
+        
+        # middle left
+        try:
+            if not board[x - 1][y]:
+                tile_map[x - 1][y].select()
+        except IndexError:
+            return None
+        
+        # top left
+        try:
+            if not board[x - 1][y + 1]:
+                tile_map[x - 1][y + 1].select()
+        except IndexError:
+            return None
+        
+        # top middle
+        try:
+            if not board[x][y + 1]:
+                tile_map[x][y + 1].select()
+        except IndexError:
+            return None
+        
+        # top right
+        try:
+            if not board[x + 1][y + 1]:
+                tile_map[x + 1][y + 1].select()
+        except IndexError:
+            return None
+        
+        # middle right
+        try:
+            if not board[x + 1][y]:
+                tile_map[x + 1][y].select()
+        except IndexError:
+            return None
+        
+        # bottom right
+        try:
+            if not board[x + 1][y - 1]:
+                tile_map[x + 1][y - 1].select()
+        except IndexError:
+            return None
+        
+        # bottom middle
+        try:
+            if not board[x][y - 1]:
+                tile_map[x][y - 1].select()
+        except IndexError:
+            return None
+    
+    def show_edible(self, pieces_map):
         return
