@@ -190,301 +190,215 @@ class Piece:
         else:
             return True
 
-    def get_moves(self):
-        return
-
-    def get_enemies(self):
-        return
-
-
-class Pawn(Piece):
-    def get_moves(self):
-        # Init moves list
-        self.moves = []
-
-        # White team
-        if self.team == 'w':
-
-            # Single step
-            if self.y in [2, 3, 4, 5, 6, 7] and not board[self.x][self.y + 1]:
-                self.moves.append(tile_map[self.x][self.y + 1])
-
-                # Double step
-                if self.y == 2 and not board[self.x][self.y + 2]:
-                    self.moves.append(tile_map[self.x][self.y + 2])
-
-        # Black team
-        if self.team == 'b':
-
-            # Single step
-            if self.y in [7, 6, 5, 4, 3, 2] and not board[self.x][self.y - 1]:
-                self.moves.append(tile_map[self.x][self.y - 1])
-
-                # Double step
-                if self.y == 7 and not board[self.x][self.y - 2]:
-                    self.moves.append(tile_map[self.x][self.y - 2])
-
-        self.get_enemies()
-
-    def get_enemies(self):
-        # Init enemies list
-        self.enemies = []
-
-        left_enemy_x = None
-        right_enemy_x = None
-
-        # White team
-        if self.team == 'w':
-            if self.x > 1:
-                left_enemy_x = self.x - 1
-            if self.x < 8:
-                right_enemy_x = self.x + 1
-
-            if self.y < 8:
-                if left_enemy_x:
-                    if board[left_enemy_x][self.y + 1] in self.pieces_map:
-                        left_enemy = self.get_piece(left_enemy_x, self.y + 1)
-
-                        if left_enemy.team != self.team:
-                            self.enemies.append(left_enemy)
-
-                if right_enemy_x:
-                    if board[right_enemy_x][self.y + 1] in self.pieces_map:
-                        right_enemy = self.get_piece(right_enemy_x, self.y + 1)
-
-                        if right_enemy.team != self.team:
-                            self.enemies.append(right_enemy)
-
-        # Black team
-        if self.team == 'b':
-            if self.x > 1:
-                left_enemy_x = self.x - 1
-            if self.x < 8:
-                right_enemy_x = self.x + 1
-
-            if self.y > 1:
-                if left_enemy_x:
-                    if board[left_enemy_x][self.y - 1] in self.pieces_map:
-                        left_enemy = self.get_piece(left_enemy_x, self.y - 1)
-
-                        if left_enemy.team != self.team:
-                            self.enemies.append(left_enemy)
-
-                if right_enemy_x:
-                    if board[right_enemy_x][self.y - 1] in self.pieces_map:
-                        right_enemy = self.get_piece(right_enemy_x, self.y - 1)
-
-                        if right_enemy.team != self.team:
-                            self.enemies.append(right_enemy)
-
-
-class Rook(Piece):
-    def get_moves(self, init=True):
+    def init_moves_and_enemies(self, init=True):
         if init:
             # Init moves and enemies list
             self.moves = []
             self.enemies = []
-
-        # x, y = self.x, self.y
-
-        # Top line
-        for y in range(self.y + 1, 8 + 1):
-            # Add empty to moves
-            if not board[self.x][y]:
-                self.moves.append(tile_map[self.x][y])
-
-            else:
-                # Add enemy to enemies and break
-                piece = self.get_piece(self.x, y)
-                if not piece:
-                    break
-
-                if piece.team != self.team:
-                    self.enemies.append(piece)
-                    break
-
-                # Break
-                else:
-                    break
-
-        # Bottom line
-        for y in reversed(range(1, self.y)):
-            # Add empty to moves
-            if not board[self.x][y]:
-                self.moves.append(tile_map[self.x][y])
-
-            else:
-                # Add enemy to enemies and break
-                piece = self.get_piece(self.x, y)
-                if not piece:
-                    break
-
-                if piece.team != self.team:
-                    self.enemies.append(piece)
-                    break
-
-                # Break
-                else:
-                    break
-
-        # Right line
-        for x in range(self.x + 1, 8 + 1):
-            # Add empty to moves
-            if not board[x][self.y]:
-                self.moves.append(tile_map[x][self.y])
-
-            else:
-                # Add enemy to enemies and break
-                piece = self.get_piece(x, self.y)
-                if not piece:
-                    break
-
-                if piece.team != self.team:
-                    self.enemies.append(piece)
-                    break
-
-                # break
-                else:
-                    break
-
-        # Left line
-        for x in reversed(range(1, self.x)):
-            # Add empty to moves
-            if not board[x][self.y]:
-                self.moves.append(tile_map[x][self.y])
-
-            else:
-                # Add enemy to enemies and break
-                piece = self.get_piece(x, self.y)
-                if not piece:
-                    break
-
-                if piece.team != self.team:
-                    self.enemies.append(piece)
-                    break
-
-                # break
-                else:
-                    break
-
-
-class Knight(Piece):
-    def show_moves(self):
-        return
-
-
-class Bishop(Piece):
-    def get_moves(self, init=True):
-
-        if init:
-            # Init moves and enemies list
-            self.moves = []
-            self.enemies = []
-
-        # Diagonals
-
-        # Top right
-        self.bishop_snippet(1, 1)
-
-        # Bottom right
-        self.bishop_snippet(1, -1)
-
-        # Bottom left
-        self.bishop_snippet(-1, -1)
-
-        # Top left
-        self.bishop_snippet(-1, 1)
-
-    def bishop_snippet(self, x_increment, y_increment):
+    
+    def get_moves_sequence(self, x_increment, y_increment, repeat=True):
         x = self.x
         y = self.y
 
         while True:
 
             x += x_increment
-            y += y_increment
-            print(x, y)
+            y += y_increment     
 
             # Check that position is in board limits
             if not self.check_limits(x, y):
                 break
 
-            # Add empty to movess
-            if not board[x][y]:
-                self.moves.append(tile_map[x][y])
-                print(tile_map[x][y])
+            try:
+                # Add empty to moves
+                if not board[x][y]:
+                    self.moves.append(tile_map[x][y])
 
-            else:
-                # Add enemy to enemies and break
-                piece = self.get_piece(x, y)
-                if not piece:
-                    break
-
-                if piece.team != self.team:
-                    self.enemies.append(piece)
-                    break
-
-                # Break
                 else:
+                    # Add enemy to enemies and break
+                    piece = self.get_piece(x, y)
+                    if not piece:
+                        break
+
+                    if piece.team != self.team:
+                        self.enemies.append(piece)
+
                     break
+                    
+                if not repeat:
+                    break
+                
+            except IndexError:
+                break
 
-            # except IndexError:
-            #     break
 
+# class Pawn(Piece):
+#     def get_moves(self):
+#         # Init moves list
+#         self.moves = []
 
-class Queen(Bishop, Rook):
+#         # White team
+#         if self.team == 'w':
+
+#             # Single step
+#             if self.y in [2, 3, 4, 5, 6, 7] and not board[self.x][self.y + 1]:
+#                 self.moves.append(tile_map[self.x][self.y + 1])
+
+#                 # Double step
+#                 if self.y == 2 and not board[self.x][self.y + 2]:
+#                     self.moves.append(tile_map[self.x][self.y + 2])
+
+#         # Black team
+#         if self.team == 'b':
+
+#             # Single step
+#             if self.y in [7, 6, 5, 4, 3, 2] and not board[self.x][self.y - 1]:
+#                 self.moves.append(tile_map[self.x][self.y - 1])
+
+#                 # Double step
+#                 if self.y == 7 and not board[self.x][self.y - 2]:
+#                     self.moves.append(tile_map[self.x][self.y - 2])
+
+#         self.get_enemies()
+
+#     def get_enemies(self):
+#         # Init enemies list
+#         self.enemies = []
+
+#         left_enemy_x = None
+#         right_enemy_x = None
+
+#         # White team
+#         if self.team == 'w':
+#             if self.x > 1:
+#                 left_enemy_x = self.x - 1
+#             if self.x < 8:
+#                 right_enemy_x = self.x + 1
+
+#             if self.y < 8:
+#                 if left_enemy_x:
+#                     if board[left_enemy_x][self.y + 1] in self.pieces_map:
+#                         left_enemy = self.get_piece(left_enemy_x, self.y + 1)
+
+#                         if left_enemy.team != self.team:
+#                             self.enemies.append(left_enemy)
+
+#                 if right_enemy_x:
+#                     if board[right_enemy_x][self.y + 1] in self.pieces_map:
+#                         right_enemy = self.get_piece(right_enemy_x, self.y + 1)
+
+#                         if right_enemy.team != self.team:
+#                             self.enemies.append(right_enemy)
+
+#         # Black team
+#         if self.team == 'b':
+#             if self.x > 1:
+#                 left_enemy_x = self.x - 1
+#             if self.x < 8:
+#                 right_enemy_x = self.x + 1
+
+#             if self.y > 1:
+#                 if left_enemy_x:
+#                     if board[left_enemy_x][self.y - 1] in self.pieces_map:
+#                         left_enemy = self.get_piece(left_enemy_x, self.y - 1)
+
+#                         if left_enemy.team != self.team:
+#                             self.enemies.append(left_enemy)
+
+#                 if right_enemy_x:
+#                     if board[right_enemy_x][self.y - 1] in self.pieces_map:
+#                         right_enemy = self.get_piece(right_enemy_x, self.y - 1)
+
+#                         if right_enemy.team != self.team:
+#                             self.enemies.append(right_enemy)
+
+class Pawn(Piece):
     def get_moves(self):
-        self.call_bishop()
-        self.call_rook()
+        self.init_moves_and_enemies()
 
-    def call_bishop(self):
-        Bishop.get_moves(self)
-
-    def call_rook(self):
-        Rook.get_moves(self, init=False)
-
-
-class King(Piece):
-    def get_moves(self):
-        # Init moves list
-        self.moves = []
-        self.enemies = []
+        # Left and right enemies
+        for x in [-1, 1]:
+            try:
+                if board[self.x + x][self.y + 1]:
+                    self.get_moves_sequence(x, 1, repeat=False)
+            except IndexError:
+                continue
         
+        # Single step
+        self.get_moves_sequence(0, 1, repeat=False)
+        # Double step
+        if self.y == 2:
+            self.get_moves_sequence(0, 2, repeat=False)
+            
+            
+        # Front enemy is not killable
+        for piece in self.enemies:
+            if piece.x == self.x:
+                self.enemies.remove(piece)
+
+        
+        
+        
+
+class Rook(Piece):
+    def get_moves(self, init=True):
+        self.init_moves_and_enemies(init)
+            
+        # Top 
+        self.get_moves_sequence(0, 1)
+
+        # Right
+        self.get_moves_sequence(1, 0)
+
+        # Bottom
+        self.get_moves_sequence(0, -1)
+
+        # Left
+        self.get_moves_sequence(-1, 0)
+
+
+class Knight(Piece):
+    def get_moves(self):
+        self.init_moves_and_enemies()
+
+        for x, y in ((1, 2), (1, -2), (-1, 2), (-1, -2)):
+            self.get_moves_sequence(x, y, repeat=False)
+            self.get_moves_sequence(y, x, repeat=False)
+
+
+class Bishop(Piece):
+    def get_moves(self):
+        self.init_moves_and_enemies()
+
+        # Diagonals
+
+        # Top right
+        self.get_moves_sequence(1, 1)
+
+        # Bottom right
+        self.get_moves_sequence(1, -1)
+
+        # Bottom left
+        self.get_moves_sequence(-1, -1)
+
+        # Top left
+        self.get_moves_sequence(-1, 1)
+
+
+class Queen(Piece):
+    def get_moves(self, repeat=True):
+        self.init_moves_and_enemies()
+
         # Check in 1 tile radius
         for x in range(-1, 2):
             for y in range(-1, 2):
                 # Skip if self position
                 if x == 0 and y == 0:
                     continue
+
+                self.get_moves_sequence(x, y, repeat)
                 
-                self.king_snippet(x, y)
 
-
-    def king_snippet(self, x_increment, y_increment):
-        x = self.x + x_increment
-        y = self.y + y_increment
-
-        # Check that position is in board limits
-        if not self.check_limits(x, y):
-            return
-
-        try:         
-            # Add empty to movess
-            if not board[x][y]:
-                self.moves.append(tile_map[x][y])
-
-            else:
-                # Add enemy to enemies and break
-                piece = self.get_piece(x, y)
-                if not piece:
-                    return
-
-                if piece.team != self.team:
-                    self.enemies.append(piece)
-                    return
-
-                else:
-                    return    
-                
-        except IndexError:
-            return
+class King(Queen):
+    def get_moves(self):
+        super().get_moves(False)
