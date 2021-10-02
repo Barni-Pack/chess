@@ -1,6 +1,5 @@
 import pygame
 from test import *
-from classes.piece_classes import Pawn, Rook, Knight, Bishop, Queen, King
 from mappings.tile_map import tile_map
 from mappings.board import board
 from mappings.pieces_map import pieces_map
@@ -29,13 +28,10 @@ def select_piece(pos_x, pos_y):
             print('Piece was not found (huh???)')
             return None
 
-        # print(piece.name)
-
         # Select new if not selected
         if not selected:
             if piece:
                 piece.select()
-                # print(piece.x, piece.y)
                 return piece
 
             else:
@@ -60,7 +56,6 @@ def select_piece(pos_x, pos_y):
                 # Eat other if from the other team
                 else:
                     selected.kill(piece)
-                    update_all_pieces_data()
                     selected = None 
                     return None
 
@@ -72,9 +67,7 @@ def select_piece(pos_x, pos_y):
 
         # Move to second selected tile
         elif tile:
-            # print(tile.name)
             selected.move2tile(tile)
-            update_all_pieces_data()
             selected = None
             return None
         
@@ -104,5 +97,3 @@ if __name__ == "__main__":
                     selected = select_piece(pos_x, pos_y)
                 else:
                     new_selected = select_piece(pos_x, pos_y)
-
-                # print(selected, new_selected)

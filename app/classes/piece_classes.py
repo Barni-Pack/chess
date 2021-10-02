@@ -159,10 +159,14 @@ class Piece:
         tile_map[self_x][self_y].draw()
 
         # Update available moves and enemies
-        # self.update_data()
+        self.update_all_pieces_data()
         
         # Update display
         pygame.display.flip()
+        
+    def update_all_pieces_data(self):
+        for piece_name in sum(board, []):
+            self.pieces_map[piece_name].update_data() if piece_name else None    
         
     def update_data(self):
         self.get_moves()
