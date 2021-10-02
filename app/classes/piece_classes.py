@@ -57,7 +57,7 @@ class Piece:
         print(self.enemies)
         self.selected = True
         self.check_selection()
-        
+
     def deselect(self):
         self.selected = False
         self.check_selection()
@@ -72,7 +72,7 @@ class Piece:
             self.clear_selection()
             self.clear_moves()
             self.clear_enemies()
-            
+
         # Update display
         pygame.display.flip()
 
@@ -130,16 +130,16 @@ class Piece:
     def kill(self, piece):
         # Deselect self
         self.deselect()
-        
+
         if piece not in self.enemies:
             print('huh?')
             return
 
         global dead_pieces
         dead_pieces.append(piece)
-        
+
         self.swap_with_tile(piece.tile)
-    
+
     def swap_with_tile(self, tile):
         # Get coordinates
         self_x, self_y = index_2d(board, self.name)
@@ -160,21 +160,21 @@ class Piece:
 
         # Update available moves and enemies
         self.update_all_pieces_data()
-        
+
         # Update display
         pygame.display.flip()
-        
+
     def update_all_pieces_data(self):
         for piece_name in sum(board, []):
-            self.pieces_map[piece_name].update_data() if piece_name else None    
-        
-    def update_data(self):
-        self.get_moves()
-        self.get_enemies()
-        
+            self.pieces_map[piece_name].get_moves() if piece_name else None
+
+    # def update_data(self):
+    #     self.get_moves()
+    #     self.get_enemies()
+
     def get_moves(self):
         return
-    
+
     def get_enemies(self):
         return
 
@@ -205,6 +205,8 @@ class Pawn(Piece):
                 # Double step
                 if self.y == 7 and not board[self.x][self.y - 2]:
                     self.moves.append(tile_map[self.x][self.y - 2])
+        
+        self.get_enemies()
 
     def get_enemies(self):
         # Init enemies list
@@ -259,10 +261,84 @@ class Pawn(Piece):
 
 
 class Rook(Piece):
-    def show_moves(self):
-        moves = []
+    def get_moves(self):
+        # Init moves and enemies list
+        self.moves = []
+        self.enemies = []
 
-        return
+        # x, y = self.x, self.y
+
+        # Top line
+        for y in range(self.y + 1, 8 + 1):
+            # Add empty to moves
+            if not board[self.x][y]:
+                self.moves.append(tile_map[self.x][y])
+
+            else:
+                # Add enemy to enemies and break
+                piece = self.get_piece(self.x, y)
+
+                if piece.team != self.team:
+                    self.enemies.append(piece)
+                    break
+
+                # Break
+                else:
+                    break
+
+        # Bottom line
+        for y in reversed(range(1, self.y)):
+            # Add empty to moves
+            if not board[self.x][y]:
+                self.moves.append(tile_map[self.x][y])
+
+            else:
+                # Add enemy to enemies and break
+                piece = self.get_piece(self.x, y)
+
+                if piece.team != self.team:
+                    self.enemies.append(piece)
+                    break
+
+                # Break
+                else:
+                    break
+
+        # Right line
+        for x in range(self.x + 1, 8 + 1):
+            # Add empty to moves
+            if not board[x][self.y]:
+                self.moves.append(tile_map[x][self.y])
+
+            else:
+                # Add enemy to enemies and break
+                piece = self.get_piece(x, self.y)
+
+                if piece.team != self.team:
+                    self.enemies.append(piece)
+                    break
+
+                # break
+                else:
+                    break
+
+        # Left line
+        for x in reversed(range(1, self.x)):
+            # Add empty to moves
+            if not board[x][self.y]:
+                self.moves.append(tile_map[x][self.y])
+
+            else:
+                # Add enemy to enemies and break
+                piece = self.get_piece(x, self.y)
+
+                if piece.team != self.team:
+                    self.enemies.append(piece)
+                    break
+
+                # break
+                else:
+                    break
 
 
 class Knight(Piece):
@@ -281,64 +357,69 @@ class Queen(Piece):
 
 
 class King(Piece):
-    def show_moves(self):
+    def get_moves(self):
+        # Init moves list
+        self.moves = []
+
+        print('nigag')
+
         x, y = self.x, self.y
 
         # bottom left
         try:
             if not board[x - 1][y - 1]:
-                tile_map[x - 1][y - 1].select()
+                self.moves.append(tile_map[x - 1][y - 1])
         except IndexError:
             return None
 
         # middle left
         try:
             if not board[x - 1][y]:
-                tile_map[x - 1][y].select()
+                self.moves.append(tile_map[x - 1][y])
         except IndexError:
             return None
 
         # top left
         try:
             if not board[x - 1][y + 1]:
-                tile_map[x - 1][y + 1].select()
+                self.moves.append(tile_map[x - 1][y + 1])
         except IndexError:
             return None
 
         # top middle
         try:
             if not board[x][y + 1]:
-                tile_map[x][y + 1].select()
+                self.moves.append(tile_map[x][y + 1])
         except IndexError:
             return None
 
         # top right
         try:
             if not board[x + 1][y + 1]:
-                tile_map[x + 1][y + 1].select()
+                self.moves.append(tile_map[x + 1][y + 1])
         except IndexError:
             return None
 
         # middle right
         try:
             if not board[x + 1][y]:
-                tile_map[x + 1][y].select()
+                self.moves.append(tile_map[x + 1][y])
         except IndexError:
             return None
 
         # bottom right
         try:
             if not board[x + 1][y - 1]:
-                tile_map[x + 1][y - 1].select()
+                self.moves.append(tile_map[x + 1][y - 1])
         except IndexError:
             return None
 
         # bottom middle
         try:
             if not board[x][y - 1]:
-                tile_map[x][y - 1].select()
+                self.moves.append(tile_map[x][y - 1])
         except IndexError:
             return None
 
-    def show_edible(self, pieces_map):
+    def show_edible(self):
         return
