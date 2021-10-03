@@ -107,7 +107,7 @@ class Piece:
     def draw_piece(self):
         pawn_image = svg.load_svg(path.join('svg', self.image))
 
-        scale = 0.75
+        scale = 0.9
         pawn_image = pygame.transform.smoothscale(pawn_image, (int(tile_size * scale),
                                                                int(tile_size * scale)))
 
