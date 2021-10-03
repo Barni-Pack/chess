@@ -1,7 +1,8 @@
 from pygame.surfarray import blit_array
-from config import board_size, tile_size, default_white_tile_color, default_black_tile_color, green_white_tile_color, green_black_tile_color, red_white_tile_color, red_black_tile_color
+from config import board_row_tiles, tile_size, default_white_tile_color, default_black_tile_color, green_white_tile_color, green_black_tile_color, red_white_tile_color, red_black_tile_color
+from config import board_window_offset
 import pygame
-from config import surface
+from config import screen
 
 tile_letter = {
     'a': 1,
@@ -26,7 +27,10 @@ class Tile:
 
         self.coordinates = self.x, self.y
 
-        self.y_pixels = (board_size - self.y) * tile_size
+         # Gui pixel offset
+        self.offset = board_window_offset
+        
+        self.y_pixels = (board_row_tiles - self.y) * tile_size + self.offset
         self.x_pixels = (self.x - 1) * tile_size
 
         self.size = tile_size
@@ -60,7 +64,7 @@ class Tile:
 
     # Draws tile
     def draw(self):
-        pygame.draw.rect(surface,
+        pygame.draw.rect(screen,
                          self.color,
                          pygame.Rect(self.x_pixels, self.y_pixels, self.size, self.size))
 

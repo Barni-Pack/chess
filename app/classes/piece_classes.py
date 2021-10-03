@@ -1,16 +1,17 @@
 import pygame
 
-from config import tile_size, surface, board_size
-from game_data import dead_pieces
-from os import path, stat
+from config import tile_size, screen, board_row_tiles, board_window_offset
+from session_data import dead_pieces
+from os import path
 import svg
 
 from mappings.board import board
-# from mappings.pieces_map import pieces_map
 
 from mappings.tile_map import tile_map
 
 from .tile_class import Tile
+
+from session_data import switch_turn
 
 
 def index_2d(list_2d, key):
@@ -53,12 +54,10 @@ class Piece:
         try:
             return self.pieces_map[board[x][y]]
         except KeyError:
-            # Piece was not found in pieces_map (probably disabled)
+            print('Piece was not found in pieces_map (probably disabled)')
             pass
 
     def select(self):
-        # print(self.moves)
-        # print(self.enemies)
         self.selected = True
         self.check_selection()
 
@@ -115,9 +114,9 @@ class Piece:
         image_width, image_height = pawn_image.get_width(), pawn_image.get_height()
 
         x_pixels = (self.x - 1) * tile_size
-        y_pixels = (board_size - self.y) * tile_size
+        y_pixels = (board_row_tiles - self.y) * tile_size + board_window_offset
 
-        surface.blit(pawn_image, (x_pixels + (tile_size - image_width) / 2,
+        screen.blit(pawn_image, (x_pixels + (tile_size - image_width) / 2,
                                   y_pixels + (tile_size - image_height) / 2))
 
     def move2tile(self, tile: Tile):
@@ -167,6 +166,9 @@ class Piece:
 
         # Update display
         pygame.display.flip()
+        
+        # Switch player
+        switch_turn()
 
     def update_all_pieces_data(self):
         for piece_name in sum(board, []):
@@ -176,14 +178,10 @@ class Piece:
                 # Piece was not found in pieces_map (probably disabled)
                 pass
 
-    # def update_data(self):
-    #     self.get_moves()
-    #     self.get_enemies()
-
     @staticmethod
     def check_limits(x, y):
         # Check that position is in board limits
-        limits = range(1, 8 + 1)
+        limits = range(1, board_row_tiles + 1)
 
         if x not in limits or y not in limits:
             return False
@@ -251,7 +249,7 @@ class Pawn(Piece):
         self.get_moves_sequence(0, y, repeat=False)
         # Double step if single available
         if self.moves:
-            if (self.y == 2 and y == 1) or (self.y == 7 and y == -1):
+            if (self.y == 2 and y == 1) or (self.y == board_row_tiles-1 and y == -1):
                 self.get_moves_sequence(0, 2 * y, repeat=False)
 
         # Front enemy is not killable

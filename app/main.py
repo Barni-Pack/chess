@@ -1,10 +1,12 @@
 import pygame
+from pygame.constants import VIDEORESIZE
 from test import *
 from mappings.tile_map import tile_map
 from mappings.board import board
 from mappings.pieces_map import pieces_map
-from config import board_size, tile_size, screen_size
-from game_data import selected, new_selected, dead_pieces
+from config import board_window_h, tile_size, board_window_offset
+import config
+from session_data import selected, new_selected, current_player
 
 
 def select_piece(pos_x, pos_y):
@@ -31,8 +33,10 @@ def select_piece(pos_x, pos_y):
         # Select new if not selected
         if not selected:
             if piece:
-                piece.select()
-                return piece
+                # Select only from self team
+                if current_player().team == piece.team:
+                    piece.select()
+                    return piece
 
             else:
                 return None
@@ -74,13 +78,15 @@ def select_piece(pos_x, pos_y):
 
 def update_all_pieces_data():
     for piece_name in sum(board, []):
-        pieces_map[piece_name].update_data() if piece_name else None
+        pieces_map[piece_name].update_data() if piece_name else None        
 
 
 if __name__ == "__main__":
     pygame.init()
-
+    clock = pygame.time.Clock()
+    
     pygame.display.flip()
+    
 
     running = True
     while running:
@@ -88,12 +94,19 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 running = False
                 pygame.quit()
+                
+            # if event.type == VIDEORESIZE:
+                # config.screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                # config.board_window_h = config.screen.get_width()
+                # print(config.screen.get_width())
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos_x, pos_y = pygame.mouse.get_pos()
-                pos_y = screen_size - pos_y
+                pos_y = board_window_h - pos_y
 
                 if not selected:
-                    selected = select_piece(pos_x, pos_y)
+                    selected = select_piece(pos_x, pos_y + board_window_offset)
                 else:
-                    new_selected = select_piece(pos_x, pos_y)
+                    new_selected = select_piece(pos_x, pos_y + board_window_offset)
+        
+        clock.tick(30)

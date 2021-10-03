@@ -1,13 +1,26 @@
 import pygame
 
-screen_size = 800
-surface = pygame.display.set_mode((screen_size, screen_size))
+screen_width = 400
+screen_height = int(screen_width * 9 / 4)
+screen = pygame.display.set_mode((screen_width, screen_height))
 
-board_size = 8
-tile_size = int(screen_size / board_size)
+screen_height_block = int(screen_height / 18)
+
+header_window_h = 2 * screen_height_block
+player_window_h = 3 * screen_height_block
+board_window_h = 8 * screen_height_block
+footer_window_h = 2 * screen_height_block
+
+board_window_offset = header_window_h + player_window_h
+
+board_row_tiles = 8
+tile_size = int(board_window_h / board_row_tiles)
+
+# Colors
+screen.fill((22, 21, 17))
 
 default_black_tile_color = (181, 136, 103)
-default_white_tile_color = (241, 217, 183)
+default_white_tile_color = (240, 218, 181)
 
 green_white_tile_color = (207, 207, 121)
 green_black_tile_color = (168, 161, 76)
