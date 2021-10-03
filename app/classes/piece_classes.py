@@ -195,7 +195,7 @@ class Piece:
             # Init moves and enemies list
             self.moves = []
             self.enemies = []
-    
+
     def get_moves_sequence(self, x_increment, y_increment, repeat=True):
         x = self.x
         y = self.y
@@ -203,7 +203,7 @@ class Piece:
         while True:
 
             x += x_increment
-            y += y_increment     
+            y += y_increment
 
             # Check that position is in board limits
             if not self.check_limits(x, y):
@@ -224,127 +224,47 @@ class Piece:
                         self.enemies.append(piece)
 
                     break
-                    
+
                 if not repeat:
                     break
-                
+
             except IndexError:
                 break
 
-
-# class Pawn(Piece):
-#     def get_moves(self):
-#         # Init moves list
-#         self.moves = []
-
-#         # White team
-#         if self.team == 'w':
-
-#             # Single step
-#             if self.y in [2, 3, 4, 5, 6, 7] and not board[self.x][self.y + 1]:
-#                 self.moves.append(tile_map[self.x][self.y + 1])
-
-#                 # Double step
-#                 if self.y == 2 and not board[self.x][self.y + 2]:
-#                     self.moves.append(tile_map[self.x][self.y + 2])
-
-#         # Black team
-#         if self.team == 'b':
-
-#             # Single step
-#             if self.y in [7, 6, 5, 4, 3, 2] and not board[self.x][self.y - 1]:
-#                 self.moves.append(tile_map[self.x][self.y - 1])
-
-#                 # Double step
-#                 if self.y == 7 and not board[self.x][self.y - 2]:
-#                     self.moves.append(tile_map[self.x][self.y - 2])
-
-#         self.get_enemies()
-
-#     def get_enemies(self):
-#         # Init enemies list
-#         self.enemies = []
-
-#         left_enemy_x = None
-#         right_enemy_x = None
-
-#         # White team
-#         if self.team == 'w':
-#             if self.x > 1:
-#                 left_enemy_x = self.x - 1
-#             if self.x < 8:
-#                 right_enemy_x = self.x + 1
-
-#             if self.y < 8:
-#                 if left_enemy_x:
-#                     if board[left_enemy_x][self.y + 1] in self.pieces_map:
-#                         left_enemy = self.get_piece(left_enemy_x, self.y + 1)
-
-#                         if left_enemy.team != self.team:
-#                             self.enemies.append(left_enemy)
-
-#                 if right_enemy_x:
-#                     if board[right_enemy_x][self.y + 1] in self.pieces_map:
-#                         right_enemy = self.get_piece(right_enemy_x, self.y + 1)
-
-#                         if right_enemy.team != self.team:
-#                             self.enemies.append(right_enemy)
-
-#         # Black team
-#         if self.team == 'b':
-#             if self.x > 1:
-#                 left_enemy_x = self.x - 1
-#             if self.x < 8:
-#                 right_enemy_x = self.x + 1
-
-#             if self.y > 1:
-#                 if left_enemy_x:
-#                     if board[left_enemy_x][self.y - 1] in self.pieces_map:
-#                         left_enemy = self.get_piece(left_enemy_x, self.y - 1)
-
-#                         if left_enemy.team != self.team:
-#                             self.enemies.append(left_enemy)
-
-#                 if right_enemy_x:
-#                     if board[right_enemy_x][self.y - 1] in self.pieces_map:
-#                         right_enemy = self.get_piece(right_enemy_x, self.y - 1)
-
-#                         if right_enemy.team != self.team:
-#                             self.enemies.append(right_enemy)
 
 class Pawn(Piece):
     def get_moves(self):
         self.init_moves_and_enemies()
 
-        # Left and right enemies
+        # Select direction based on piece team
+        y = 1 if self.team == 'w' else -1
+
+        # Left and right exnemies
         for x in [-1, 1]:
             try:
-                if board[self.x + x][self.y + 1]:
-                    self.get_moves_sequence(x, 1, repeat=False)
+                if board[self.x + x][self.y + y]:
+                    self.get_moves_sequence(x, y, repeat=False)
             except IndexError:
                 continue
-        
+
         # Single step
-        self.get_moves_sequence(0, 1, repeat=False)
-        # Double step
-        if self.y == 2:
-            self.get_moves_sequence(0, 2, repeat=False)
-            
-            
+        self.get_moves_sequence(0, y, repeat=False)
+        # Double step if single available
+        if self.moves:
+            if (self.y == 2 and y == 1) or (self.y == 7 and y == -1):
+                self.get_moves_sequence(0, 2 * y, repeat=False)
+
         # Front enemy is not killable
         for piece in self.enemies:
             if piece.x == self.x:
                 self.enemies.remove(piece)
 
-        
-        
-        
 
 class Rook(Piece):
     def get_moves(self, init=True):
         self.init_moves_and_enemies(init)
-            
-        # Top 
+
+        # Top
         self.get_moves_sequence(0, 1)
 
         # Right
@@ -397,7 +317,7 @@ class Queen(Piece):
                     continue
 
                 self.get_moves_sequence(x, y, repeat)
-                
+
 
 class King(Queen):
     def get_moves(self):
