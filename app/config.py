@@ -28,6 +28,9 @@ default_white_tile_color = (240, 218, 181)
 green_white_tile_color = (207, 207, 121)
 green_black_tile_color = (168, 161, 76)
 
+green_dot_white_tile_color = (129, 152, 106)
+green_dot_black_tile_color = (100, 110, 65)
+
 red_white_tile_color = (247, 145, 146)
 red_black_tile_color = (207, 105, 106)
 

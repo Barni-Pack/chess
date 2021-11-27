@@ -86,7 +86,7 @@ def draw_player_block(player):
     _, y = get_postion_to_place_in_middle(parent_y=offset,
                                           parent_height=player_window_h,
                                           self_height=circle_radius*2)
-    
+
     pygame.draw.circle(screen, (117, 153, 1),
                        (10 + circle_radius, y + circle_radius + 3), circle_radius)
 
@@ -133,8 +133,8 @@ def text_to_screen(text, x, y, size,
         text = str(text)
         size = int(size * 0.85)
         font = pygame.font.Font(font_type, size)
-        
-        background_color=None
+
+        background_color = None
         # background_color=(100, 0, 0)
         text = font.render(text, True, color, background_color)
         screen.blit(text, (x, y))

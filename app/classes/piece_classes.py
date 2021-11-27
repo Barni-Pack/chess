@@ -13,13 +13,17 @@ from .tile_class import Tile
 
 from session_data import switch_turn
 
+from typing import List
 
-def index_2d(list_2d, key):
+
+def index_2d(list_2d: List[List[str]], key: str) -> tuple:
+    # Returns (x, y) position of piece on the board
     for x, column in enumerate(list_2d):
         if key in column:
             y = column.index(key)
-            return x+1, y+1
-
+            return (x+1, y+1)
+    raise KeyError('Piece was not found.')
+    
 
 class Piece:
     def __init__(self, name, killable=False):
@@ -85,11 +89,11 @@ class Piece:
 
     def draw_moves(self):
         for tile in self.moves:
-            tile.draw_green()
+            tile.draw_green_dot()
 
     def draw_enemies(self):
         for piece in self.enemies:
-            piece.tile.draw_red()
+            piece.tile.draw_green_triangle()
             piece.draw_piece()
 
     def clear_selection(self):
@@ -107,7 +111,7 @@ class Piece:
     def draw_piece(self):
         pawn_image = svg.load_svg(path.join('svg', self.image))
 
-        scale = 0.9
+        scale = 0.95
         pawn_image = pygame.transform.smoothscale(pawn_image, (int(tile_size * scale),
                                                                int(tile_size * scale)))
 
